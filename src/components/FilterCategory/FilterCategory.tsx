@@ -3,13 +3,15 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { API } from "../../interfaces";
 
+type FilterTypes = {
+	api: API;
+	setCategoryFilter: any;
+};
+
 export default function FilterCategory({
 	api,
 	setCategoryFilter,
-}: {
-	api: API;
-	setCategoryFilter: any;
-}) {
+}: FilterTypes) {
 	const options = api.categories.map((item) => item.name);
 	const [value, setValue] = React.useState<string | null>(null);
 

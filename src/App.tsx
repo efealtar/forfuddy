@@ -3,39 +3,34 @@ import axios from "axios";
 import ListCategories from "./components/ListCategories";
 import { API } from "./interfaces";
 
-import { Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import Header from "./components/Header/Header";
 import FilterCategory from "./components/FilterCategory/FilterCategory";
 import SearchSubCategories from "./components/SearchSubCategories/SearchSubCategories";
+import Loading from "./components/Loading/Loading";
 
 const App = () => {
-	useEffect(() => {
-		async function getList() {
-			try {
-				const response = await axios({
-					method: "get",
-					headers: { "Content-Type": "application/json" },
-					url: "/sapigw-product/product-categories",
-				});
-				setApi(response.data);
-			} catch (error) {
-				console.error(error);
-			}
-		}
-
-		getList();
-	}, []);
-
-	const [api, setApi] = useState<API | undefined>();
+	const [api, setApi] = useState<API>();
+	const [loading, setLoading] = useState<Boolean>(true);
 	const [categoryFilter, setCategoryFilter] = useState("");
 	const [searched, setSearched] = useState("");
+	useEffect(() => {
+		setLoading(true);
+		axios
+			.get("/sapigw-product/product-categories", {
+				headers: { "Content-Type": "application/json" },
+			})
+			.then((response) => setApi(response.data))
+			.catch((error) => console.log(error));
+		setLoading(false);
+	}, []);
 
 	return (
-		<Grid sx={{ mx: "auto", width: 300 }}>
-			{api === undefined ? (
-				"Loading"
+		<>
+			{loading ? (
+				<Loading />
 			) : (
-				<>
+				<Grid sx={{ mx: "auto", width: 300 }}>
 					<Header />
 					<SearchSubCategories setSearched={setSearched} />
 					<FilterCategory api={api} setCategoryFilter={setCategoryFilter} />
@@ -45,9 +40,9 @@ const App = () => {
 						categoryFilter={categoryFilter}
 						searched={searched}
 					/>
-				</>
+				</Grid>
 			)}
-		</Grid>
+		</>
 	);
 };
 
