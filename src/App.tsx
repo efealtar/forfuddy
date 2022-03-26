@@ -3,7 +3,7 @@ import axios from "axios";
 import ListCategories from "./components/ListCategories";
 import { API } from "./interfaces";
 
-import { Box, Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import Header from "./components/Header/Header";
 import FilterCategory from "./components/FilterCategory/FilterCategory";
 import SearchSubCategories from "./components/SearchSubCategories/SearchSubCategories";
@@ -15,27 +15,34 @@ const App = () => {
 	const [categoryFilter, setCategoryFilter] = useState("");
 	const [searched, setSearched] = useState("");
 	useEffect(() => {
-		setLoading(true);
 		axios
 			.get("/sapigw-product/product-categories", {
-				headers: { "Content-Type": "application/json" },
+				headers: {
+					"Content-Type": "application/json",
+					"Access-Control-Allow-Origin": "*",
+				},
 			})
 			.then((response) => setApi(response.data))
+			.then(() => setLoading(false))
 			.catch((error) => console.log(error));
-		setLoading(false);
 	}, []);
 
 	return (
 		<>
-			{loading ? (
+			{loading === true ? (
 				<Loading />
 			) : (
 				<Grid sx={{ mx: "auto", width: 300 }}>
 					<Header />
 					<SearchSubCategories setSearched={setSearched} />
-					<FilterCategory api={api} setCategoryFilter={setCategoryFilter} />
 
+					<FilterCategory
+						//@ts-ignore
+						api={api}
+						setCategoryFilter={setCategoryFilter}
+					/>
 					<ListCategories
+						//@ts-ignore
 						api={api}
 						categoryFilter={categoryFilter}
 						searched={searched}
